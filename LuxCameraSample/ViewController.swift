@@ -12,7 +12,22 @@ import AVFoundation
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     var session: AVCaptureSession!
+    
     @IBOutlet var imageView: UIImageView!
+    
+    // F値
+    @IBOutlet var fNumberLabel: UILabel!
+    
+    // シャッタースピード
+    @IBOutlet var exposureTimeLabel: UILabel!
+    
+    // ISO値
+    @IBOutlet var iSOSpeedRatingsLabel: UILabel!
+    
+    @IBOutlet var fNumberSlider: UISlider!
+    @IBOutlet var exposureTimeSlider: UISlider!
+    @IBOutlet var iSOSpeedRatingsSlider: UISlider!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -104,6 +119,18 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         let rawMetadata = CMCopyDictionaryOfAttachments(nil, sampleBuffer, CMAttachmentMode(kCMAttachmentMode_ShouldPropagate))
         let metadata = CFDictionaryCreateMutableCopy(nil, 0, rawMetadata) as NSMutableDictionary
         let exifData = metadata.value(forKey: "{Exif}") as? NSMutableDictionary
+        
+        print(exifData)
+        
+        if let exifData = exifData {
+            let fNumber = exifData.value(forKey: "FNumber") as! Double
+            let exposureTime = exifData.value(forKey: "ExposureTime") as! Double
+            let iSOSpeedRatings = exifData.value(forKey: "ISOSpeedRatings") as! NSArray
+            
+            fNumberLabel.text = String(fNumber)
+            exposureTimeLabel.text = String(exposureTime)
+            iSOSpeedRatingsLabel.text = String(iSOSpeedRatings.firstObject as! Double)
+        }
         
         let FNumber: Double = exifData?["FNumber"] as! Double
         let ExposureTime: Double = exifData?["ExposureTime"] as! Double
